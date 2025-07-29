@@ -1,5 +1,15 @@
 # frozen_string_literal: true
 
+module OverrideOrder
+  def create_proposed_shipments
+    shipments = super
+
+    create_handling_charge! if needs_handling_charge?
+
+    shipments
+  end
+end
+
 Spree::Order.class_eval do
   def display_handling_total
     Spree::Money.new(handling_total, currency: currency)
@@ -26,16 +36,6 @@ Spree::Order.class_eval do
         order: shipment.order,
         label: "Handling"
       )
-    end
-  end
-
-  module OverrideOrder
-    def create_proposed_shipments
-      shipments = super
-
-      create_handling_charge! if needs_handling_charge?
-
-      shipments
     end
   end
 
