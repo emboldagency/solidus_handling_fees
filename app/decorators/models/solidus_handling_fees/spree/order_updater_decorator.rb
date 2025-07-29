@@ -10,8 +10,13 @@ module OverrideOrderUpdater
     [*shipments].each do |item|
       handling_adjustments = item.adjustments.select(&:handling?)
 
-      # Use update! which is the modern replacement for recalculate
-      handling_adjustments.each(&:update!)
+      # Update each adjustment by recalculating its amount from the source
+      handling_adjustments.each do |adjustment|
+        if adjustment.source&.calculator
+          new_amount = adjustment.source.calculator.compute_shipment(item)
+          adjustment.update!(amount: new_amount)
+        end
+      end
 
       item.handling_total = handling_adjustments.sum(&:amount)
     end
