@@ -1,17 +1,24 @@
-SolidusHandlingFees
-===================
 
-[![CircleCI](https://circleci.com/gh/solidusio-contrib/solidus_handling_fees.svg?style=svg)](https://circleci.com/gh/solidusio-contrib/solidus_handling_fees)
+# Solidus Handling Fees
 
-Adds Handling Fee functionality to [Spree](http://github.com/spree/spree).
+[![Build and Deploy](https://embold.net/api/github/badge/workflow-status.php?repo=solidus_handling_feesworkflowrelease.yml&workflow=build-and-deploy.yml)](https://github.com/emboldagency/solidus_handling_feesworkflowrelease.yml/actions/workflows/build-and-deploy.yml)
+![Semantic Versioning](https://embold.net/api/github/badge/semver.php?repo=solidus_handling_feesworkflowrelease.yml&)
 
-Installation
-------------
+## Fork Notice
 
-Add solidus_handling_fees to your Gemfile:
+This repository is a fork of [solidusio-contrib/solidus_handling_fees](https://github.com/solidusio-contrib/solidus_handling_fees).
+It may include customizations, fixes, or changes specific to the needs of emboldagency or its clients. For updates and documentation, refer to this repository: [emboldagency/solidus_handling_fees](https://github.com/emboldagency/solidus_handling_fees).
+
+## Overview
+
+Adds Handling Fee functionality to [Solidus](https://github.com/solidusio/solidus).
+
+## Installation
+
+Add `solidus_handling_fees` to your Gemfile:
 
 ```ruby
-gem 'solidus_handling_fees', github: 'solidusio-contrib/solidus_handling_fees'
+gem 'solidus_handling_fees', github: 'emboldagency/solidus_handling_fees'
 ```
 
 Bundle your dependencies and run the installation generator:
@@ -24,9 +31,9 @@ bundle exec rails g solidus_handling_fees:install
 Usage
 -----
 
-To create a handling fee, edit a Stock Location in the admin and apply a calculator. For example, you might use the Flat Rate calculator to set a flat fee of $3.99 on all shipments.
+To create a handling fee, edit a Stock Location in the Solidus admin and apply a calculator. For example, you might use the Flat Rate calculator to set a flat fee of $3.99 on all shipments.
 
-If you'd like to specify only certain orders to have a handling fee, override the `needs_handling_charge?` method in your own Spree::Order decorator.
+If you'd like to specify only certain orders to have a handling fee, override the `needs_handling_charge?` method in your own `Solidus::Order` decorator (or `Spree::Order` if your Solidus installation still uses the Spree namespace).
 
 Testing
 -------
