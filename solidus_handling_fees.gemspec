@@ -35,6 +35,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "solidus_support", ">= 0.8"
 
   spec.add_development_dependency "coffee-rails"
+  spec.add_development_dependency "faraday-retry"
   spec.add_development_dependency "generator_spec"
   spec.add_development_dependency "sass-rails"
   spec.add_development_dependency "solidus_dev_support"
