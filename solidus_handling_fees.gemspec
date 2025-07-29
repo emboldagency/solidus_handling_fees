@@ -39,5 +39,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'generator_spec'
   spec.add_development_dependency 'sass-rails'
   spec.add_development_dependency 'solidus_dev_support'
-  spec.add_development_dependency 'solidus_frontend', 
+  spec.add_development_dependency 'solidus_frontend'
 end
