@@ -10,11 +10,8 @@ module OverrideOrderUpdater
     [*shipments].each do |item|
       handling_adjustments = item.adjustments.select(&:handling?)
 
-      if Gem.loaded_specs["solidus_core"].version >= Gem::Version.create("2.4")
-        handling_adjustments.each(&:recalculate)
-      else
-        handling_adjustments.each(&:update!)
-      end
+      # Use update! which is the modern replacement for recalculate
+      handling_adjustments.each(&:update!)
 
       item.handling_total = handling_adjustments.sum(&:amount)
     end
