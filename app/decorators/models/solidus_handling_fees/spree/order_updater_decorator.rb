@@ -11,7 +11,7 @@ Spree::OrderUpdater.class_eval do
       [*shipments].each do |item|
         handling_adjustments = item.adjustments.select(&:handling?)
 
-        if Gem.loaded_specs['solidus_core'].version >= Gem::Version.create('2.4')
+        if Gem.loaded_specs["solidus_core"].version >= Gem::Version.create("2.4")
           handling_adjustments.each(&:recalculate)
         else
           handling_adjustments.each(&:update!)

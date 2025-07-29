@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'spree/core'
+require "spree/core"
 
 module SolidusHandlingFees
   class Engine < Rails::Engine
@@ -8,7 +8,7 @@ module SolidusHandlingFees
 
     isolate_namespace ::Spree
 
-    engine_name 'solidus_handling_fees'
+    engine_name "solidus_handling_fees"
 
     # use rspec for tests
     config.generators do |g|

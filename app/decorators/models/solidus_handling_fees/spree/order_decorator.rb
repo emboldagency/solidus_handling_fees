@@ -24,7 +24,7 @@ Spree::Order.class_eval do
         adjustable: shipment,
         amount: amount,
         order: shipment.order,
-        label: 'Handling'
+        label: "Handling"
       )
     end
   end
