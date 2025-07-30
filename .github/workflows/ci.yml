@@ -22,7 +22,7 @@ jobs:
           --health-timeout=5s
           --health-retries=5
     env:
-      DB: postgres
+      DB: postgresql
       RAILS_ENV: test
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -36,6 +36,30 @@ jobs:
         run: |
           gem install bundler
           bundle install --jobs 4 --retry 3
+      - name: Overwrite dummy database.yml for CI
+        run: |
+          cat <<'EOF' > spec/dummy/config/database.yml
+  default: &default
+    adapter: <%= ENV['DB'] == 'mysql' ? 'mysql2' : ENV['DB'] == 'postgresql' ? 'postgresql' : 'sqlite3' %>
+    encoding: utf8
+    pool: 5
+    username: <%= ENV['DB'] == 'mysql' ? 'root' : ENV['DB'] == 'postgresql' ? 'postgres' : '' %>
+    password: <%= ENV['DB'] == 'mysql' ? 'root' : ENV['DB'] == 'postgresql' ? 'postgres' : '' %>
+    host: <%= ENV['DB'] == 'mysql' || ENV['DB'] == 'postgresql' ? '127.0.0.1' : '' %>
+    port: <%= ENV['DB'] == 'mysql' ? 3306 : ENV['DB'] == 'postgresql' ? 5432 : '' %>
+
+  development:
+    <<: *default
+    database: <%= ENV['DB'] == 'mysql' ? 'solidus_development' : ENV['DB'] == 'postgresql' ? 'solidus_development' : 'db/solidus_development.sqlite3' %>
+
+  test:
+    <<: *default
+    database: <%= ENV['DB'] == 'mysql' ? 'solidus_test' : ENV['DB'] == 'postgresql' ? 'solidus_test' : 'db/solidus_test.sqlite3' %>
+
+  production:
+    <<: *default
+    database: <%= ENV['DB'] == 'mysql' ? 'solidus_production' : ENV['DB'] == 'postgresql' ? 'solidus_production' : 'db/solidus_production.sqlite3' %>
+  EOF
       - name: Run tests
         run: bundle exec rake
 
@@ -68,5 +92,29 @@ jobs:
         run: |
           gem install bundler
           bundle install --jobs 4 --retry 3
+      - name: Overwrite dummy database.yml for CI
+        run: |
+          cat <<'EOF' > spec/dummy/config/database.yml
+  default: &default
+    adapter: <%= ENV['DB'] == 'mysql' ? 'mysql2' : ENV['DB'] == 'postgresql' ? 'postgresql' : 'sqlite3' %>
+    encoding: utf8
+    pool: 5
+    username: <%= ENV['DB'] == 'mysql' ? 'root' : ENV['DB'] == 'postgresql' ? 'postgres' : '' %>
+    password: <%= ENV['DB'] == 'mysql' ? 'root' : ENV['DB'] == 'postgresql' ? 'postgres' : '' %>
+    host: <%= ENV['DB'] == 'mysql' || ENV['DB'] == 'postgresql' ? '127.0.0.1' : '' %>
+    port: <%= ENV['DB'] == 'mysql' ? 3306 : ENV['DB'] == 'postgresql' ? 5432 : '' %>
+
+  development:
+    <<: *default
+    database: <%= ENV['DB'] == 'mysql' ? 'solidus_development' : ENV['DB'] == 'postgresql' ? 'solidus_development' : 'db/solidus_development.sqlite3' %>
+
+  test:
+    <<: *default
+    database: <%= ENV['DB'] == 'mysql' ? 'solidus_test' : ENV['DB'] == 'postgresql' ? 'solidus_test' : 'db/solidus_test.sqlite3' %>
+
+  production:
+    <<: *default
+    database: <%= ENV['DB'] == 'mysql' ? 'solidus_production' : ENV['DB'] == 'postgresql' ? 'solidus_production' : 'db/solidus_production.sqlite3' %>
+  EOF
       - name: Run tests
         run: bundle exec rake
