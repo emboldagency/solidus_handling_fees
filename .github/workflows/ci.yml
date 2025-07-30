@@ -7,173 +7,33 @@ on:
   pull_request:
   workflow_dispatch:
 
+concurrency:
+  group: test-${{ github.ref_name }}
+  cancel-in-progress: ${{ github.ref_name != 'master' }}
+
+permissions:
+  contents: read
+
 jobs:
-  run-specs-with-postgres:
+  test:
+    name: Ruby ${{ matrix.ruby-version }} on ${{ matrix.database }}
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:13
-        ports: [5432:5432]
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-        options: >-
-          --health-cmd="pg_isready -U postgres"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
-    env:
-      DB: postgresql
-      RAILS_ENV: test
-      DB_ADAPTER: postgresql
-      DB_HOST: 127.0.0.1
-      DB_PORT: 5432
-      DB_USERNAME: postgres
-      DB_PASSWORD: postgres
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby-version:
+          - "3.3"
+        database:
+          - "postgresql"
+          - "mysql"
+        # ruby-version: ["3.1", "3.2", "3.3"]
+        # database: ["postgresql", "mysql", "sqlite"]
+        # rails-version: ["7.0", "7.1"]
+        # solidus-branch: ["v4.3", "v4.4"]
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
+      - name: Run extension tests
+        uses: solidusio/test-solidus-extension@main
         with:
-          ruby-version: 3.3.8
-      - name: Cache Ruby gems
-        uses: actions/cache@v4
-        with:
-          path: vendor/bundle
-          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-gems-
-      - name: Cache dummy app
-        uses: actions/cache@v4
-        with:
-          path: |
-            spec/dummy
-            !spec/dummy/log
-            !spec/dummy/tmp
-          key: ${{ runner.os }}-dummy-app-${{ hashFiles('**/Gemfile.lock', 'lib/**/*', 'app/**/*', 'config/**/*', 'db/migrate/**/*') }}
-          restore-keys: |
-            ${{ runner.os }}-dummy-app-
-      - name: Install dependencies
-        run: |
-          gem install bundler
-          bundle config set --local path vendor/bundle
-          bundle install --jobs 4 --retry 3
-      - name: Create database configuration
-        run: |
-          mkdir -p spec/dummy/config
-          cat > spec/dummy/config/database.yml << EOF
-          default: &default
-            adapter: ${DB_ADAPTER}
-            encoding: utf8
-            pool: 5
-            username: ${DB_USERNAME}
-            password: ${DB_PASSWORD}
-            host: ${DB_HOST}
-            port: ${DB_PORT}
-
-          development:
-            <<: *default
-            database: solidus_development
-
-          test:
-            <<: *default
-            database: solidus_test
-
-          production:
-            <<: *default
-            database: solidus_production
-          EOF
-      - name: Build dummy app
-        run: |
-          if [ ! -f spec/dummy/config/application.rb ]; then
-            bundle exec rake extension:test_app
-          else
-            echo "Dummy app already exists, skipping build"
-          fi
-      - name: Run tests
-        run: bundle exec rake
-
-  run-specs-with-mysql:
-    runs-on: ubuntu-latest
-    services:
-      mysql:
-        image: mysql:8
-        ports: [3306:3306]
-        env:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: solidus_test
-        options: >-
-          --health-cmd="mysqladmin ping --silent"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
-    env:
-      DB: mysql
-      RAILS_ENV: test
-      DB_ADAPTER: mysql2
-      DB_HOST: 127.0.0.1
-      DB_PORT: 3306
-      DB_USERNAME: root
-      DB_PASSWORD: root
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: 3.3.8
-      - name: Cache Ruby gems
-        uses: actions/cache@v4
-        with:
-          path: vendor/bundle
-          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-gems-
-      - name: Cache dummy app
-        uses: actions/cache@v4
-        with:
-          path: |
-            spec/dummy
-            !spec/dummy/log
-            !spec/dummy/tmp
-          key: ${{ runner.os }}-dummy-app-${{ hashFiles('**/Gemfile.lock', 'lib/**/*', 'app/**/*', 'config/**/*', 'db/migrate/**/*') }}
-          restore-keys: |
-            ${{ runner.os }}-dummy-app-
-      - name: Install dependencies
-        run: |
-          gem install bundler
-          bundle config set --local path vendor/bundle
-          bundle install --jobs 4 --retry 3
-      - name: Create database configuration
-        run: |
-          mkdir -p spec/dummy/config
-          cat > spec/dummy/config/database.yml << EOF
-          default: &default
-            adapter: ${DB_ADAPTER}
-            encoding: utf8
-            pool: 5
-            username: ${DB_USERNAME}
-            password: ${DB_PASSWORD}
-            host: ${DB_HOST}
-            port: ${DB_PORT}
-
-          development:
-            <<: *default
-            database: solidus_development
-
-          test:
-            <<: *default
-            database: solidus_test
-
-          production:
-            <<: *default
-            database: solidus_production
-          EOF
-      - name: Build dummy app
-        run: |
-          if [ ! -f spec/dummy/config/application.rb ]; then
-            bundle exec rake extension:test_app
-          else
-            echo "Dummy app already exists, skipping build"
-          fi
-      - name: Run tests
-        run: bundle exec rake
+          database: ${{ matrix.database }}
+          ruby-version: ${{ matrix.ruby-version }}
