@@ -43,6 +43,16 @@ jobs:
           key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
           restore-keys: |
             ${{ runner.os }}-gems-
+      - name: Cache dummy app
+        uses: actions/cache@v4
+        with:
+          path: |
+            spec/dummy
+            !spec/dummy/log
+            !spec/dummy/tmp
+          key: ${{ runner.os }}-dummy-app-${{ hashFiles('**/Gemfile.lock', 'lib/**/*', 'app/**/*', 'config/**/*', 'db/migrate/**/*') }}
+          restore-keys: |
+            ${{ runner.os }}-dummy-app-
       - name: Install dependencies
         run: |
           gem install bundler
@@ -74,7 +84,12 @@ jobs:
             database: solidus_production
           EOF
       - name: Build dummy app
-        run: bundle exec rake extension:test_app
+        run: |
+          if [ ! -f spec/dummy/config/application.rb ]; then
+            bundle exec rake extension:test_app
+          else
+            echo "Dummy app already exists, skipping build"
+          fi
       - name: Run tests
         run: bundle exec rake
 
@@ -113,6 +128,16 @@ jobs:
           key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
           restore-keys: |
             ${{ runner.os }}-gems-
+      - name: Cache dummy app
+        uses: actions/cache@v4
+        with:
+          path: |
+            spec/dummy
+            !spec/dummy/log
+            !spec/dummy/tmp
+          key: ${{ runner.os }}-dummy-app-${{ hashFiles('**/Gemfile.lock', 'lib/**/*', 'app/**/*', 'config/**/*', 'db/migrate/**/*') }}
+          restore-keys: |
+            ${{ runner.os }}-dummy-app-
       - name: Install dependencies
         run: |
           gem install bundler
@@ -144,6 +169,11 @@ jobs:
             database: solidus_production
           EOF
       - name: Build dummy app
-        run: bundle exec rake extension:test_app
+        run: |
+          if [ ! -f spec/dummy/config/application.rb ]; then
+            bundle exec rake extension:test_app
+          else
+            echo "Dummy app already exists, skipping build"
+          fi
       - name: Run tests
         run: bundle exec rake
