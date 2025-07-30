@@ -31,6 +31,10 @@ end
 
 gem "rails-controller-testing", group: :test
 
+group :development, :test do
+  gem 'solidus_dev_support'
+end
+
 gemspec
 
 # Use a local Gemfile to include development dependencies that might not be
