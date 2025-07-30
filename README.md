@@ -1,8 +1,8 @@
 
 # Solidus Handling Fees
 
-[![Build and Deploy](https://embold.net/api/github/badge/workflow-status.php?repo=solidus_handling_feesworkflowrelease.yml&workflow=build-and-deploy.yml)](https://github.com/emboldagency/solidus_handling_feesworkflowrelease.yml/actions/workflows/build-and-deploy.yml)
-![Semantic Versioning](https://embold.net/api/github/badge/semver.php?repo=solidus_handling_feesworkflowrelease.yml&)
+[![release.yml](https://embold.net/api/github/badge/workflow-status.php?repo=solidus_handling_fees&workflow=release.yml)](https://github.com/emboldagency/solidus_handling_fees/actions/workflows/release.yml) [![ci.yml](https://embold.net/api/github/badge/workflow-status.php?repo=solidus_handling_fees&workflow=ci.yml)](https://github.com/emboldagency/solidus_handling_fees/actions/workflows/ci.yml) <!--
+-->![Semantic Versioning](https://embold.net/api/github/badge/semver.php?repo=solidus_handling_fees)
 
 ## Fork Notice
 
