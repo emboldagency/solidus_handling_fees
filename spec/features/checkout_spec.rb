@@ -62,10 +62,10 @@ describe "Checkout", js: true do
     fill_in_address(alabama_address)
     click_button "Save and Continue"
     click_button "Save and Continue"
+    click_button "Save and Continue"
     expect(page).to have_content(/Handling:\s\$2.70/)
     expect(page).to have_content(/Order Total:\s\$42.70/)
 
-    click_on "Save and Continue"
     click_on "Place Order"
     expect(current_path).to match(spree.order_path(Spree::Order.last))
   end
