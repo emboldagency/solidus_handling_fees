@@ -38,6 +38,7 @@ jobs:
           bundle install --jobs 4 --retry 3
       - name: Overwrite dummy database.yml for CI
         run: |
+          mkdir -p spec/dummy/config
           cat <<'EOF' > spec/dummy/config/database.yml
           default: &default
             adapter: <%= ENV['DB'] == 'mysql' ? 'mysql2' : ENV['DB'] == 'postgresql' ? 'postgresql' : 'sqlite3' %>
@@ -94,6 +95,7 @@ jobs:
           bundle install --jobs 4 --retry 3
       - name: Overwrite dummy database.yml for CI
         run: |
+          mkdir -p spec/dummy/config
           cat <<'EOF' > spec/dummy/config/database.yml
           default: &default
             adapter: <%= ENV['DB'] == 'mysql' ? 'mysql2' : ENV['DB'] == 'postgresql' ? 'postgresql' : 'sqlite3' %>
